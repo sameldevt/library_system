@@ -2,6 +2,7 @@ package view;
 
 import controller.LibraryManagement;
 import controller.UserManagement;
+import controller.Verification;
 import model.entities.Author;
 import model.entities.Book;
 import model.entities.Publisher;
@@ -27,6 +28,9 @@ public class UI {
             System.out.println("LOGGED AS GUEST");
             return "GUEST";
         }
+        if(Objects.equals(email, "ADMIN")){
+            return "ADMIN";
+        }
         System.out.print("Enter your password: ");
         final int password = sc.nextInt();
 
@@ -45,10 +49,13 @@ public class UI {
         final String name = sc.nextLine();
         System.out.print("Enter a email: ");
         final String email = sc.nextLine();
+        if(Verification.verifyUserEmail(email)){
+            throw new UserException("User email already registered");
+        }
         System.out.print("Enter a password: ");
         final int password = sc.nextInt();
 
-        while(UserManagement.verifyId(id)){
+        while(Verification.verifyUserId(id)){
             id = random.nextInt(0, 99);
         }
 
@@ -58,23 +65,23 @@ public class UI {
     }
 
     public void registerBook(){
+        int bookId = random.nextInt(10000, 20000);
+        int authorId = random.nextInt(1000, 2000);
+        int publisherId = random.nextInt(2001, 3000);
         System.out.println("======= BOOK REGISTER ======");
         System.out.print("Enter the title: ");
         final String title = sc.nextLine();
-        int bookId = random.nextInt(10000, 20000);
-        while(LibraryManagement.verifyId(bookId)){
+        while(Verification.verifyBookId(bookId)){
             bookId = random.nextInt(10000, 20000);
         }
         System.out.print("Enter the author: ");
         final String authorName = sc.nextLine();
-        int authorId = random.nextInt(1000, 2000);
-        while(LibraryManagement.verifyId(authorId)){
+        while(Verification.verifyAuthorId(authorId)){
             authorId = random.nextInt(1000, 2000);
         }
         System.out.print("Enter the publisher: ");
         final String publisherName = sc.nextLine();
-        int publisherId = random.nextInt(2001, 3000);
-        while(LibraryManagement.verifyId(publisherId)){
+        while(Verification.verifyPublisherId(publisherId)){
             publisherId = random.nextInt(2001, 3000);
         }
         System.out.print("Enter the language: ");
@@ -89,11 +96,11 @@ public class UI {
     }
 
     public void registerAuthor(){
+        int authorId = random.nextInt(1000, 2000);
         System.out.println("======= BOOK AUTHOR ======");
         System.out.print("Enter author name: ");
         final String authorName = sc.nextLine();
-        int authorId = random.nextInt(1000, 2000);
-        while(LibraryManagement.verifyId(authorId)){
+        while(Verification.verifyAuthorId(authorId)){
             authorId = random.nextInt(1000, 2000);
         }
         Author author = new Author(authorId, authorName);
@@ -101,11 +108,11 @@ public class UI {
     }
 
     public void registerPublisher(){
+        int publisherId = random.nextInt(2001, 3000);
         System.out.println("======= BOOK AUTHOR ======");
         System.out.print("Enter publisher name: ");
         final String publisherName = sc.nextLine();
-        int publisherId = random.nextInt(2001, 3000);
-        while(LibraryManagement.verifyId(publisherId)){
+        while(Verification.verifyPublisherId(publisherId)){
             publisherId = random.nextInt(2001, 3000);
         }
 

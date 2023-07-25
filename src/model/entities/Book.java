@@ -25,6 +25,18 @@ public class Book {
         this.availability = availability;
     }
 
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Book Id: " + id + "\n");
+        sb.append("Title: " + title + "\n");
+        sb.append("Author: " + author + "\n");
+        sb.append("Publisher: " + publisher + "\n");
+        sb.append("Language: " + language + "\n");
+        sb.append("Availability: " + availability + "\n");
+
+        return sb.toString();
+    }
     public Integer getId() {
         return id;
     }
@@ -40,7 +52,6 @@ public class Book {
     public Publisher getPublisher() {
         return publisher;
     }
-
 
     public Language getLanguage() {
         return language;

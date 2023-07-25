@@ -1,15 +1,15 @@
 package model.entities;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Borrow {
 
     private Integer bookId;
     private Integer borrowId;
-    private LocalDateTime borrowDate;
+    private LocalDate borrowDate;
     private Integer period;
 
-    public Borrow(Integer borrowId, Integer bookId, LocalDateTime borrowDate, Integer period){
+    public Borrow(Integer borrowId, Integer bookId, LocalDate borrowDate, Integer period){
         this.borrowId = borrowId;
         this.bookId = bookId;
         this.borrowDate = borrowDate;
@@ -32,11 +32,11 @@ public class Borrow {
         this.borrowId = borrowId;
     }
 
-    public LocalDateTime getBorrowDate() {
+    public LocalDate getBorrowDate() {
         return borrowDate;
     }
 
-    public void setBorrowDate(LocalDateTime borrowDate) {
+    public void setBorrowDate(LocalDate borrowDate) {
         this.borrowDate = borrowDate;
     }
 

@@ -26,6 +26,7 @@ public class User {
         this.password = password;
     }
 
+
     public void registerBorrow(Borrow borrow){
         borrows.add(borrow);
     }

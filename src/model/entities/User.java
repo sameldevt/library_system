@@ -4,13 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import model.exceptions.UserException;
+
 public class User {
 
     private Integer id;
     private String name;
     private String email;
     private Integer password;
-    private List<Borrow> borrowsList = new ArrayList<>();
+    private List<Borrow> borrows = new ArrayList<>();
+
+    public User(String email, Integer password){
+        this.email = email;
+        this.password = password;
+    }
 
     public User(Integer id, String name, String email, Integer password){
         this.id = id;
@@ -19,8 +26,16 @@ public class User {
         this.password = password;
     }
 
-    public void registerBorrowBook(Borrow borrows){
-        borrowsList.add(borrows);
+    public void registerBorrow(Borrow borrow){
+        borrows.add(borrow);
+    }
+
+    public List<Borrow> getBorrowList(){
+        return borrows;
+    }
+
+    public void removeBorrow(Borrow borrow){
+        borrows.remove(borrow);
     }
 
     public boolean verifyPassword(int password) {

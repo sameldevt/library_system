@@ -8,6 +8,7 @@ import model.entities.Publisher;
 import model.entities.User;
 import model.enums.Availability;
 import model.enums.Language;
+import model.exceptions.UserException;
 
 import java.util.Objects;
 import java.util.Random;
@@ -23,14 +24,21 @@ public class UI {
         System.out.print("Enter your email: ");
         final String email = sc.nextLine();
         if(Objects.equals(email, "")){
+            System.out.println("LOGGED AS GUEST");
             return "GUEST";
         }
         System.out.print("Enter your password: ");
         final int password = sc.nextInt();
 
-        return UserManagement.loginUser(email, password);
+        User user = new User(email, password);
+
+        if(!UserManagement.loginUser(user)){
+            throw new UserException("Invalid email or password");
+        }
+        return ""+user.getName();
     }
-    public void registerUser(){
+
+    public static boolean registerUser(){
         System.out.println("======= USER REGISTER ======");
         int id = random.nextInt(0, 99);
         System.out.print("Enter a name: ");
@@ -46,7 +54,7 @@ public class UI {
 
         User user = new User(id, name, email, password);
 
-        UserManagement.registerUser(user);
+        return UserManagement.registerUser(user);
     }
 
     public void registerBook(){

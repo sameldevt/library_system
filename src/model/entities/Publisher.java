@@ -5,8 +5,8 @@ public class Publisher{
     private Integer id;
     private String name;
 
-    public Publisher(){
-
+    public Publisher(String name){
+        this.name = name;
     }
 
     public Publisher(Integer id, String name){

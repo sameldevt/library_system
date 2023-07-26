@@ -11,14 +11,15 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class LibraryManagement {
 
-    protected static final Random random = new Random();
-    protected static final List<Book> books = new ArrayList<>();
-    protected static final List<Author> authors = new ArrayList<>();
-    protected static final List<Publisher> publishers = new ArrayList<>();
+    public static final Random random = new Random();
+    public static final List<Book> books = new ArrayList<>();
+    public static final List<Author> authors = new ArrayList<>();
+    public static final List<Publisher> publishers = new ArrayList<>();
 
     protected static final String BOOK_DB_PATH = "src/model/resources/books.csv";
     protected static final String AUTHOR_DB_PATH = "src/model/resources/authors.csv";
@@ -26,6 +27,30 @@ public class LibraryManagement {
     protected static final String BORROWS_DB_PATH = "src/model/resources/borrows.csv";
     protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    public static int generateBookId(String path){
+        Random random = new Random();
+
+        // generates a new random book id
+        int generatedId = random.nextInt(1000, 3001);
+
+        // verifies the generated book id and generates another one if it already exists
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(path))){
+            String lineInfo = bufferedReader.readLine();
+
+            while(lineInfo != null) {
+                String[] fields = lineInfo.split(",");
+                if(Objects.equals(fields[0], String.valueOf(generatedId))){
+                    generatedId = random.nextInt(1000, 3001);
+                }
+
+                lineInfo = bufferedReader.readLine();
+            }
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        return generatedId;
+    }
     public static void deleteBook(Book book){
         if(!books.contains(book)){
             throw new LibraryException("Book not registered!");
@@ -77,7 +102,7 @@ public class LibraryManagement {
         }
     }
     
-    public boolean borrowBook(Book book, int period, User user) {
+    public static boolean borrowBook(Book book, int period, User user) {
         if(!Verification.verifyBook(book)){
             throw new LibraryException("Invalid book");
         }
@@ -123,7 +148,7 @@ public class LibraryManagement {
         return true;
     }
 
-    public boolean returnBook(final Borrow BORROW, final User USER) {
+    public static boolean returnBook(final Borrow BORROW, final User USER) {
         if(!Verification.verifyUser(USER)){
             throw new UserException("Invalid user");
         }
@@ -145,7 +170,7 @@ public class LibraryManagement {
         return true;
     }
 
-    public void searchBook(String value){
+    public static void searchBook(String value){
         // searches the database for any value which is equals to input value
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(BOOK_DB_PATH))){
             String bookInfo = bufferedReader.readLine();
@@ -172,6 +197,24 @@ public class LibraryManagement {
     public static void printBookList(){
         for(Book book : books){
             System.out.println(book);
+        }
+    }
+    public static void printShortBookList(){
+        try(BufferedReader bufferedReader = new BufferedReader(new FileReader(BOOK_DB_PATH))){
+            String bookInfo = bufferedReader.readLine();
+            while(bookInfo != null) {
+                String[] fields = bookInfo.split(",");
+                String bookId = fields[0];
+                String title = fields[1];
+                String availability = fields[4];
+
+                System.out.println(bookId + " - " + title + " - " + availability);
+
+                bookInfo = bufferedReader.readLine();
+            }
+        }
+        catch (IOException e){
+            e.printStackTrace();
         }
     }
 }

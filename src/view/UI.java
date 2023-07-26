@@ -3,22 +3,83 @@ package view;
 import controller.LibraryManagement;
 import controller.UserManagement;
 import controller.Verification;
-import model.entities.Author;
-import model.entities.Book;
-import model.entities.Publisher;
-import model.entities.User;
+import model.entities.*;
 import model.enums.Availability;
 import model.enums.Language;
+import model.exceptions.LibraryException;
 import model.exceptions.UserException;
 
-import java.util.Objects;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+import static controller.LibraryManagement.books;
+import static controller.UserManagement.users;
 
 public class UI {
 
     private static final Random random = new Random();
     private static final Scanner sc = new Scanner(System.in);
+    private static List<Borrow> borrows;
+    private static final String BOOK_DB_PATH = "src/model/resources/books.csv";
+
+    public static boolean showOptions(String user) {
+        if(Objects.equals(user, "GUEST")){
+            System.out.println("1. Search book");
+            System.out.println("2. See book list");
+            System.out.println("3. Exit");
+            int option = sc.nextInt();
+            switch (option) {
+                case 1 -> searchBook();
+                case 2 -> LibraryManagement.printBookList();
+                default -> throw new LibraryException("Invalid option");
+            }
+            return true;
+        }
+        if(!Objects.equals(user, "ADMIN") && Objects.equals(user, "GUEST")){
+            System.out.println("1. Search book");
+            System.out.println("2. Borrow book");
+            System.out.println("3. Return book");
+            System.out.println("4. See book list");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
+            int option = sc.nextInt();
+            switch (option) {
+                case 1 -> searchBook();
+                case 2 -> borrowBook(user);
+                case 3 -> returnBook(user);
+                case 4 -> LibraryManagement.printBookList();
+                default -> throw new LibraryException("Invalid option");
+            }
+            return true;
+        }
+        if(user.equals("ADMIN")){
+            System.out.println("1. Register Book");
+            System.out.println("2. Register Author");
+            System.out.println("3. Register Publisher");
+            System.out.println("4. Search book");
+            System.out.println("5. Borrow book");
+            System.out.println("6. Return book");
+            System.out.println("7. See book list");
+            System.out.println("8. Exit");
+            System.out.print("Choose an option: ");
+            int option = sc.nextInt();
+            switch (option) {
+                case 1 -> registerBook();
+                case 2 -> registerAuthor();
+                case 3 -> registerPublisher();
+                case 4 -> searchBook();
+                case 5 -> borrowBook(user);
+                case 6 -> returnBook(user);
+                case 7 -> printBookList();
+                case 8 -> exit();
+                default -> System.out.println("PLACEHOLDER");
+            }
+            return true;
+        }
+        return false;
+    }
 
     public static String loginUser(){
         System.out.println("======= USER LOGIN ======");
@@ -64,7 +125,89 @@ public class UI {
         return UserManagement.registerUser(user);
     }
 
+
+    public static void borrowBook(String userName) {
+        System.out.println("======BORROW BOOK======");
+        LibraryManagement.printShortBookList();
+
+        System.out.print("Enter book id to borrow: ");
+        int bookId = sc.nextInt();
+
+        System.out.print("How many days? ");
+        int period = sc.nextInt();
+
+        User localUser = null;
+        Book localBook = null;
+
+        for(User user : users) {
+            if(Objects.equals(user.getName(), userName)){
+                localUser = user;
+            }
+        }
+        for(Book book : books){
+            if(book.getId() == bookId){
+                localBook = book;
+            }
+        }
+        LibraryManagement.borrowBook(localBook, period, localUser);
+    }
+
+    public static void registerBook(){
+        System.out.println("======REGISTER BOOK======");
+        System.out.println("Enter author data: ");
+        System.out.print("Name: ");
+        String authorName = sc.nextLine();
+        LibraryManagement.generateId();
+        Verification.verifyAuthorId();
+        LibraryManagement.registerAuthor(new Author(authorName));
+
+        System.out.println("Enter publisher data: ");
+        System.out.print("Name: ");
+        String publisherName = sc.nextLine();
+        System.out.print("Email: ");
+        String publisherEmail = sc.nextLine();
+
+        libraryManagement.registerPublisher(publisherName, publisherEmail);
+
+        System.out.println("Enter book title: ");
+        String bookTitle = sc.nextLine();
+        System.out.println("Enter book language: ");
+        System.out.println("Available languages: PORTUGUESE, ENGLISH, DEUTSCH, JAPANESE,");
+        String bookLanguage = sc.nextLine();
+        System.out.println("Enter number of pages: ");
+        int bookPageCount = sc.nextInt();
+
+        libraryManagement.registerBook(
+                bookTitle,
+                authorName,
+                publisherName,
+                Language.valueOf(bookLanguage.toUpperCase()),
+                bookPageCount
+        );
+    }
+    public static void returnBook(String userName){
+        System.out.println("======RETURN BOOK======");
+        System.out.print("Enter book id to return: ");
+        int bookId = sc.nextInt();
+        User localUser = null;
+        Borrow localBorrow = null;
+
+        for(User user : users){
+            if(user.getName() == userName){
+                localUser = user;
+            }
+        }
+        for(Borrow borrow : localUser.getBorrowList()) {
+            if(borrow.getBookId() == bookId){
+                localBorrow = borrow;
+            }
+        }
+
+        LibraryManagement.returnBook(localBorrow, localUser);
+    }
+
     public void registerBook(){
+        System.out.println("======= BOOK REGISTER ======");
         int bookId = random.nextInt(10000, 20000);
         int authorId = random.nextInt(1000, 2000);
         int publisherId = random.nextInt(2001, 3000);
@@ -96,6 +239,7 @@ public class UI {
     }
 
     public void registerAuthor(){
+        System.out.println("======= AUTHOR REGISTER ======");
         int authorId = random.nextInt(1000, 2000);
         System.out.println("======= BOOK AUTHOR ======");
         System.out.print("Enter author name: ");
@@ -107,7 +251,8 @@ public class UI {
         LibraryManagement.registerAuthor(author);
     }
 
-    public void registerPublisher(){
+    public static void registerPublisher(){
+        System.out.println("======= PUBLISHER REGISTER ======");
         int publisherId = random.nextInt(2001, 3000);
         System.out.println("======= BOOK AUTHOR ======");
         System.out.print("Enter publisher name: ");
@@ -118,6 +263,15 @@ public class UI {
 
         Publisher publisher = new Publisher(publisherId, publisherName);
         LibraryManagement.registerPublisher(publisher);
+    }
+
+    public static void searchBook(){
+        sc.nextLine();
+        System.out.println("======SEARCH BOOK======");
+        System.out.println("Enter a book description to search (TITLE, AUTHOR, PUBLISHER, AVAILABILITY, BOOK ID): ");
+        String value = sc.nextLine();
+
+        LibraryManagement.searchBook(value);
     }
 
 }

@@ -11,9 +11,9 @@ import java.util.Random;
 
 public class UserManagement {
 
-    protected static final String USER_DB_PATH = "src/model/resources/users.csv";
+    public static final String USER_DB_PATH = "src/model/resources/users.csv";
     private static final Random random = new Random();
-    protected static final List<User> users = new ArrayList<>();
+    public static final List<User> users = new ArrayList<>();
 
     public static boolean loginUser(User user){
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(USER_DB_PATH))){

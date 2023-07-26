@@ -21,10 +21,10 @@ public class LibraryManagement {
     public static final List<Author> authors = new ArrayList<>();
     public static final List<Publisher> publishers = new ArrayList<>();
 
-    protected static final String BOOK_DB_PATH = "src/model/resources/books.csv";
-    protected static final String AUTHOR_DB_PATH = "src/model/resources/authors.csv";
-    protected static final String PUBLISHER_DB_PATH = "src/model/resources/publishers.csv";
-    protected static final String BORROWS_DB_PATH = "src/model/resources/borrows.csv";
+    public static final String BOOK_DB_PATH = "model/resources/books.csv";
+    public static final String AUTHOR_DB_PATH = "model/resources/authors.csv";
+    public static final String PUBLISHER_DB_PATH = "model/resources/publishers.csv";
+    public static final String BORROWS_DB_PATH = "model/resources/borrows.csv";
     protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static int generateBookId(String path){

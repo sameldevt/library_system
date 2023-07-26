@@ -22,8 +22,7 @@ public class UI {
     private static final Random random = new Random();
     private static final Scanner sc = new Scanner(System.in);
     private static List<Borrow> borrows;
-    private static final String BOOK_DB_PATH = "src/model/resources/books.csv";
-
+    
     public static boolean showOptions(String user) {
         if(Objects.equals(user, "GUEST")){
             System.out.println("1. Search book");
@@ -72,8 +71,7 @@ public class UI {
                 case 4 -> searchBook();
                 case 5 -> borrowBook(user);
                 case 6 -> returnBook(user);
-                case 7 -> printBookList();
-                case 8 -> exit();
+                case 7 -> LibraryManagement.printBookList();
                 default -> System.out.println("PLACEHOLDER");
             }
             return true;
@@ -85,6 +83,7 @@ public class UI {
         System.out.println("======= USER LOGIN ======");
         System.out.print("Enter your email: ");
         final String email = sc.nextLine();
+
         if(Objects.equals(email, "")){
             System.out.println("LOGGED AS GUEST");
             return "GUEST";
@@ -92,6 +91,7 @@ public class UI {
         if(Objects.equals(email, "ADMIN")){
             return "ADMIN";
         }
+        
         System.out.print("Enter your password: ");
         final int password = sc.nextInt();
 
@@ -104,15 +104,18 @@ public class UI {
     }
 
     public static boolean registerUser(){
-        System.out.println("======= USER REGISTER ======");
         int id = random.nextInt(0, 99);
+        
+        System.out.println("======= USER REGISTER ======");
         System.out.print("Enter a name: ");
         final String name = sc.nextLine();
+        
         System.out.print("Enter a email: ");
         final String email = sc.nextLine();
         if(Verification.verifyUserEmail(email)){
             throw new UserException("User email already registered");
         }
+
         System.out.print("Enter a password: ");
         final int password = sc.nextInt();
 
@@ -120,11 +123,16 @@ public class UI {
             id = random.nextInt(0, 99);
         }
 
-        User user = new User(id, name, email, password);
-
-        return UserManagement.registerUser(user);
+        return UserManagement.registerUser(new User(id, name, email, password));
     }
 
+    public static void searchBook(){
+        System.out.println("======SEARCH BOOK======");
+        System.out.println("Enter a book description to search (TITLE, AUTHOR, PUBLISHER, AVAILABILITY, BOOK ID): ");
+        String value = sc.nextLine();
+
+        LibraryManagement.searchBook(value.toUpperCase());
+    }
 
     public static void borrowBook(String userName) {
         System.out.println("======BORROW BOOK======");
@@ -152,39 +160,6 @@ public class UI {
         LibraryManagement.borrowBook(localBook, period, localUser);
     }
 
-    public static void registerBook(){
-        System.out.println("======REGISTER BOOK======");
-        System.out.println("Enter author data: ");
-        System.out.print("Name: ");
-        String authorName = sc.nextLine();
-        LibraryManagement.generateId();
-        Verification.verifyAuthorId();
-        LibraryManagement.registerAuthor(new Author(authorName));
-
-        System.out.println("Enter publisher data: ");
-        System.out.print("Name: ");
-        String publisherName = sc.nextLine();
-        System.out.print("Email: ");
-        String publisherEmail = sc.nextLine();
-
-        libraryManagement.registerPublisher(publisherName, publisherEmail);
-
-        System.out.println("Enter book title: ");
-        String bookTitle = sc.nextLine();
-        System.out.println("Enter book language: ");
-        System.out.println("Available languages: PORTUGUESE, ENGLISH, DEUTSCH, JAPANESE,");
-        String bookLanguage = sc.nextLine();
-        System.out.println("Enter number of pages: ");
-        int bookPageCount = sc.nextInt();
-
-        libraryManagement.registerBook(
-                bookTitle,
-                authorName,
-                publisherName,
-                Language.valueOf(bookLanguage.toUpperCase()),
-                bookPageCount
-        );
-    }
     public static void returnBook(String userName){
         System.out.println("======RETURN BOOK======");
         System.out.print("Enter book id to return: ");
@@ -206,72 +181,65 @@ public class UI {
         LibraryManagement.returnBook(localBorrow, localUser);
     }
 
-    public void registerBook(){
-        System.out.println("======= BOOK REGISTER ======");
+    public static void registerBook(){
         int bookId = random.nextInt(10000, 20000);
         int authorId = random.nextInt(1000, 2000);
         int publisherId = random.nextInt(2001, 3000);
+
         System.out.println("======= BOOK REGISTER ======");
+        
         System.out.print("Enter the title: ");
         final String title = sc.nextLine();
         while(Verification.verifyBookId(bookId)){
             bookId = random.nextInt(10000, 20000);
         }
+
         System.out.print("Enter the author: ");
         final String authorName = sc.nextLine();
         while(Verification.verifyAuthorId(authorId)){
             authorId = random.nextInt(1000, 2000);
         }
+
         System.out.print("Enter the publisher: ");
         final String publisherName = sc.nextLine();
         while(Verification.verifyPublisherId(publisherId)){
             publisherId = random.nextInt(2001, 3000);
         }
+
         System.out.print("Enter the language: ");
         final Language language = Language.valueOf(sc.nextLine());
-
-        Author author = new Author(authorId, authorName);
-        Publisher publisher = new Publisher(publisherId, publisherName);
-
-        Book book = new Book(bookId, title, author, publisher, language, Availability.AVAILABLE);
-
-        LibraryManagement.registerBook(book);
+        
+        LibraryManagement.registerBook(new Book(bookId, title, 
+            new Author(authorId, authorName), 
+            new Publisher(publisherId, publisherName), 
+            language, Availability.AVAILABLE)
+            );
     }
 
-    public void registerAuthor(){
-        System.out.println("======= AUTHOR REGISTER ======");
+    public static void registerAuthor(){
         int authorId = random.nextInt(1000, 2000);
-        System.out.println("======= BOOK AUTHOR ======");
+
+        System.out.println("======= AUTHOR REGISTER ======");
         System.out.print("Enter author name: ");
         final String authorName = sc.nextLine();
         while(Verification.verifyAuthorId(authorId)){
             authorId = random.nextInt(1000, 2000);
         }
-        Author author = new Author(authorId, authorName);
-        LibraryManagement.registerAuthor(author);
+
+        LibraryManagement.registerAuthor(new Author(authorId, authorName));
     }
 
     public static void registerPublisher(){
-        System.out.println("======= PUBLISHER REGISTER ======");
         int publisherId = random.nextInt(2001, 3000);
-        System.out.println("======= BOOK AUTHOR ======");
+        
+        System.out.println("======= PUBLISHER REGISTER ======");
         System.out.print("Enter publisher name: ");
         final String publisherName = sc.nextLine();
         while(Verification.verifyPublisherId(publisherId)){
             publisherId = random.nextInt(2001, 3000);
         }
 
-        Publisher publisher = new Publisher(publisherId, publisherName);
-        LibraryManagement.registerPublisher(publisher);
-    }
-
-    public static void searchBook(){
-        sc.nextLine();
-        System.out.println("======SEARCH BOOK======");
-        System.out.println("Enter a book description to search (TITLE, AUTHOR, PUBLISHER, AVAILABILITY, BOOK ID): ");
-        String value = sc.nextLine();
-
-        LibraryManagement.searchBook(value);
+        LibraryManagement.registerPublisher(new Publisher(publisherId, publisherName));
     }
 
 }

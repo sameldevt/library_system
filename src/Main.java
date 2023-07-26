@@ -5,16 +5,18 @@ import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 
+import controller.DataBaseManagement;
+
 public class Main {
     public static void main(String[] args) {
+        String user = "";
         try (Scanner sc = new Scanner(System.in)) {
-            String user = "";
+            DataBaseManagement.loadBookDataBase();
             System.out.println("======LIBRARY SYSTEM======");
             do {
                 System.out.println("1. Login\n2. Register\n");
                 System.out.print("Choose an option: ");
                 int loginOption = sc.nextInt();
-                UI.clearScreen();
 
                 switch (loginOption) {
                     case 1 -> user = UI.loginUser();
@@ -25,7 +27,6 @@ public class Main {
             System.out.printf("Logged as %s\n", user);
 
             while (UI.showOptions(user)) {
-                UI.clearScreen();
                 System.out.printf("Logged as %s\n", user);
                 UI.showOptions(user);
             }

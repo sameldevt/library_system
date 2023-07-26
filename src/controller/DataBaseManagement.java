@@ -13,7 +13,7 @@ import static controller.LibraryManagement.*;
 
 public class DataBaseManagement {
 
-    protected static void clearDataBaseLine(int id, String path) {
+    public static void clearDataBaseLine(int id, String path) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path))) {
             String lineInfo = bufferedReader.readLine();
             while (lineInfo != null) {
@@ -32,7 +32,7 @@ public class DataBaseManagement {
         }
     }
 
-    protected static int loadAuthorDataBase(final String AUTHOR_NAME){
+    public static int loadAuthorDataBase(final String AUTHOR_NAME){
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(AUTHOR_DB_PATH))){
             String line = bufferedReader.readLine();
             while(line != null){
@@ -49,7 +49,7 @@ public class DataBaseManagement {
         throw new LibraryException("PLACEHOLDER");
     }
 
-    protected static int loadPublisherDataBase(final String PUBLISHER_NAME){
+    public static int loadPublisherDataBase(final String PUBLISHER_NAME){
         try(BufferedReader bufferedReader = new BufferedReader(new FileReader(PUBLISHER_DB_PATH))){
             String line = bufferedReader.readLine();
             while(line != null){
@@ -65,7 +65,7 @@ public class DataBaseManagement {
         }
         throw new LibraryException("PLACEHOLDER");
     }
-    protected static void loadBookDataBase(){
+    public static void loadBookDataBase(){
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(BOOK_DB_PATH))) {
             String line = bufferedReader.readLine();
             while (line != null) {

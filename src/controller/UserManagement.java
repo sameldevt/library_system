@@ -20,7 +20,6 @@ public class UserManagement {
             String line = bufferedReader.readLine();
             while(line != null){
                 final String[] fields = line.split(",");
-                final String userName = fields[1];
                 final int userPassword = Integer.parseInt(fields[3]);
 
                 if(users.contains(user) && user.verifyPassword(userPassword)){

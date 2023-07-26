@@ -23,6 +23,7 @@ public class Verification {
                 if(fields[0] == email){
                     return true;
                 }
+                line = bufferedReader.readLine();
             }
         }
         catch (IOException e){
